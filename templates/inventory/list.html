@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+{% block title %}Inventory - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Inventory</h1>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th class="text-end">Stock</th>
+        <th>Status</th>
+        <th>Last Restock</th>
+        <th style="width: 280px;" class="text-end">Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+        {% set st = r.stock|int %}
+        {% if st > 10 %}
+          {% set status = 'OK' %}
+          {% set cls = 'text-bg-success' %}
+        {% elif st > 0 %}
+          {% set status = 'LOW' %}
+          {% set cls = 'text-bg-warning' %}
+        {% else %}
+          {% set status = 'OUT' %}
+          {% set cls = 'text-bg-danger' %}
+        {% endif %}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td class="text-end">{{ r.stock }}</td>
+          <td><span class="badge {{ cls }}">{{ status }}</span></td>
+          <td>
+            {% if r.last_restock %}
+              {{ r.last_restock.strftime('%Y-%m-%d %H:%M') }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <form method="post" action="{{ url_for('inventory.inventory_update') }}" class="d-flex gap-2 justify-content-end">
+              <input type="hidden" name="item_id" value="{{ r.id }}" />
+              <input type="number" min="0" name="stock" class="form-control form-control-sm" style="width: 120px;" value="{{ r.stock }}" />
+              <button class="btn btn-sm btn-primary" type="submit">Save</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

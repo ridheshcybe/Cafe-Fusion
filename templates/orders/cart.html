@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+{% block title %}Cart - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Your Cart</h1>
+
+{% if not cart_items %}
+  <div class="alert alert-info">Your cart is empty. <a href="{{ url_for('menu.index') }}">Browse the menu</a>.</div>
+{% else %}
+  <div class="card mb-3">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="text-end">Unit</th>
+            <th class="text-end">Qty</th>
+            <th class="text-end">Line Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item, qty in cart_items %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td class="text-end">{{ item.price_cents|money }}</td>
+              <td class="text-end">{{ qty }}</td>
+              <td class="text-end">{{ (item.price_cents * qty)|money }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3" class="text-end">Subtotal</th>
+            <th class="text-end">{{ subtotal_cents|money }}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <form method="post" action="{{ url_for('orders.cart_confirm') }}" class="card card-body">
+        <h2 class="h5">Customer Details</h2>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Name</label>
+            <input name="customer_name" class="form-control" required />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Phone</label>
+            <input name="customer_phone" class="form-control" required />
+          </div>
+        </div>
+
+        <h2 class="h5">Coupon (optional)</h2>
+        <div class="mb-3">
+          <input name="coupon_code" class="form-control" placeholder="E.g. FUSION10" />
+          <div class="form-text">Coupons are validated on checkout.</div>
+        </div>
+
+        <button class="btn btn-success" type="submit">Confirm Online Order</button>
+      </form>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card card-body">
+        <h2 class="h5">Actions</h2>
+        <a class="btn btn-outline-primary mb-2" href="{{ url_for('menu.index') }}">Continue Shopping</a>
+        <form method="post" action="{{ url_for('orders.cart_clear') }}">
+          <button class="btn btn-outline-danger" type="submit">Clear Cart</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

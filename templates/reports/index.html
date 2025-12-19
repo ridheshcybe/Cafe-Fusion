@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block title %}Reports - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Reports</h1>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header"><strong>Daily Totals (last 14 days)</strong></div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th class="text-end">Orders</th>
+              <th class="text-end">Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in per_day %}
+              <tr>
+                <td>{{ row.day }}</td>
+                <td class="text-end">{{ row.orders }}</td>
+                <td class="text-end">{{ row.revenue_cents|int|money }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card mb-3">
+      <div class="card-header"><strong>Order Modes</strong></div>
+      <div class="card-body">
+        {% for mode, count in mode_counts %}
+          <div class="d-flex justify-content-between">
+            <div>{{ mode }}</div>
+            <div class="fw-semibold">{{ count }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><strong>Order Statuses</strong></div>
+      <div class="card-body">
+        {% for status, count in status_counts %}
+          <div class="d-flex justify-content-between">
+            <div>{{ status }}</div>
+            <div class="fw-semibold">{{ count }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

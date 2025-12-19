@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block title %}Manual Online Order - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Legacy Manual Online Order</h1>
+<div class="alert alert-secondary">
+  Format: <code>item_id:qty;item_id:qty</code> (example: <code>1:2;3:1</code>)
+</div>
+<form method="post" action="{{ url_for('orders.manual_order_post') }}" class="card card-body" style="max-width: 760px;">
+  <div class="mb-3">
+    <label class="form-label">Items Spec</label>
+    <input name="items_spec" class="form-control" placeholder="1:2;3:1" required />
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Customer Name</label>
+      <input name="customer_name" class="form-control" required />
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Customer Phone</label>
+      <input name="customer_phone" class="form-control" required />
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Coupon Code (optional)</label>
+    <input name="coupon_code" class="form-control" placeholder="FUSION10" />
+  </div>
+  <button class="btn btn-primary" type="submit">Create Online Order</button>
+</form>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block title %}Staff Register - Café Fusion{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h1 class="h3 mb-3">Staff Registration</h1>
+    <div class="alert alert-warning">Staff registration requires the setup code from <code>.env</code>.</div>
+    <form method="post" action="{{ url_for('auth.staff_register_post') }}" class="card card-body">
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Setup Code</label>
+        <input type="password" name="setup_code" class="form-control" required />
+      </div>
+      <button class="btn btn-dark" type="submit">Create Staff Account</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

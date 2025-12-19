@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% block title %}Track Order - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Track Order</h1>
+<form method="get" action="{{ url_for('orders.track_form') }}" class="card card-body" style="max-width: 520px;">
+  <div class="mb-3">
+    <label class="form-label">Order ID</label>
+    <input type="number" min="1" name="order_id" class="form-control" placeholder="e.g. 12" required />
+  </div>
+  <button class="btn btn-primary" type="submit">Track</button>
+</form>
+{% endblock %}

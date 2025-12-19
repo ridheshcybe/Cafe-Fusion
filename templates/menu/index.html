@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block title %}Menu - Café Fusion{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 m-0">Menu</h1>
+  <div class="btn-group" role="group" aria-label="Mode">
+    <a class="btn btn-sm {% if mode=='online' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{{ url_for('menu.index', mode='online') }}">Online</a>
+    <a class="btn btn-sm {% if mode=='offline' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{{ url_for('menu.index', mode='offline') }}">Offline</a>
+    <a class="btn btn-sm {% if mode=='all' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="{{ url_for('menu.index', mode='all') }}">All</a>
+  </div>
+</div>
+
+{% if not grouped %}
+  <div class="alert alert-info">No menu items found.</div>
+{% endif %}
+
+{% for category, items in grouped.items() %}
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between">
+      <strong>{{ category }}</strong>
+      <span class="text-muted small">{{ items|length }} items</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="text-end">Price</th>
+            <th style="width: 220px;" class="text-end">Add</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ item.name }}</div>
+                <div class="small text-muted">
+                  {% if item.is_available_online %}<span class="badge text-bg-success">Online</span>{% else %}<span class="badge text-bg-secondary">Online Off</span>{% endif %}
+                  {% if item.is_available_offline %}<span class="badge text-bg-success">Offline</span>{% else %}<span class="badge text-bg-secondary">Offline Off</span>{% endif %}
+                </div>
+              </td>
+              <td class="text-end">{{ item.price_cents|money }}</td>
+              <td class="text-end">
+                <form method="post" action="{{ url_for('orders.cart_add') }}" class="d-flex justify-content-end gap-2">
+                  <input type="hidden" name="item_id" value="{{ item.id }}" />
+                  <input type="number" name="qty" value="1" min="1" class="form-control form-control-sm" style="width: 90px;" />
+                  <button class="btn btn-sm btn-primary" type="submit">Add</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endfor %}
+
+<div class="mt-3">
+  <a class="btn btn-outline-secondary" href="{{ url_for('orders.manual_order_form') }}">Legacy Manual Online Order Form</a>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% block title %}Counter / POS - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Counter / POS (Offline Order)</h1>
+<div class="alert alert-secondary">
+  Enter items as: <code>item_id:qty;item_id:qty</code> (example: <code>1:2;3:1</code>)
+</div>
+
+<form method="post" action="{{ url_for('staff.create_offline_order') }}" class="card card-body" style="max-width: 860px;">
+  <div class="mb-3">
+    <label class="form-label">Items Spec</label>
+    <input name="items_spec" class="form-control" placeholder="1:2;3:1" required />
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Payment Mode</label>
+      <select name="payment_mode" class="form-select">
+        <option value="cash">Cash</option>
+        <option value="card">Card</option>
+        <option value="upi">UPI</option>
+      </select>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label class="form-label">Discount (cents)</label>
+      <input name="discount_cents" type="number" min="0" value="0" class="form-control" />
+      <div class="form-text">Example: 500 = ₹5.00</div>
+    </div>
+  </div>
+
+  <h2 class="h5 mt-2">Customer (optional)</h2>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Name</label>
+      <input name="customer_name" class="form-control" placeholder="Walk-in" />
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Phone</label>
+      <input name="customer_phone" class="form-control" placeholder="-" />
+    </div>
+  </div>
+
+  <button class="btn btn-success" type="submit">Create Offline Order</button>
+</form>
+{% endblock %}

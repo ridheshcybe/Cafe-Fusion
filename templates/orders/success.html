@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% block title %}Order Success - Café Fusion{% endblock %}
+{% block content %}
+<div class="card card-body">
+  <h1 class="h3">Order Placed</h1>
+  <p class="mb-1">Your order ID is:</p>
+  <div class="display-6 fw-semibold">#{{ order.id }}</div>
+  <hr />
+  <p class="mb-0">You can track your order status any time:</p>
+  <div class="mt-2">
+    <a class="btn btn-primary" href="{{ url_for('orders.order_status', order_id=order.id) }}">View Status</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('orders.track_form') }}">Track Another Order</a>
+  </div>
+</div>
+{% endblock %}
