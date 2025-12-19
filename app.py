@@ -15,8 +15,6 @@ def create_app():
     with app.app_context():
         from models import Coupon, InventoryItem, MenuItem, Order, OrderItem, User
 
-        db.create_all()
-
         @app.template_filter("money")
         def money(cents: int) -> str:
             if cents is None:
@@ -40,6 +38,7 @@ def create_app():
 
             seed_data()
 
+    from blueprints.admin import bp as admin_bp
     from blueprints.auth import bp as auth_bp
     from blueprints.inventory import bp as inventory_bp
     from blueprints.menu import bp as menu_bp
@@ -47,6 +46,7 @@ def create_app():
     from blueprints.reports import bp as reports_bp
     from blueprints.staff import bp as staff_bp
 
+    app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(menu_bp)
     app.register_blueprint(orders_bp)

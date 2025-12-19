@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block title %}Add Menu Item - Café Fusion{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Add Menu Item</h1>
+<form method="post" class="card card-body" style="max-width: 540px;">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input name="name" class="form-control" required />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Category</label>
+    <input name="category" class="form-control" required />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Price (cents)</label>
+    <input name="price_cents" type="number" min="0" class="form-control" required />
+    <div class="form-text">Enter price in cents (e.g. 28000 for ₹280.00)</div>
+  </div>
+  <div class="form-check mb-2">
+    <input name="is_available_online" type="checkbox" class="form-check-input" checked />
+    <label class="form-check-label">Available online</label>
+  </div>
+  <div class="form-check mb-3">
+    <input name="is_available_offline" type="checkbox" class="form-check-input" checked />
+    <label class="form-check-label">Available offline</label>
+  </div>
+  <button class="btn btn-primary" type="submit">Add Item</button>
+</form>
+{% endblock %}

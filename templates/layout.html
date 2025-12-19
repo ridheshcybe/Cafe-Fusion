@@ -29,6 +29,7 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Staff</a>
                 <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('admin.menu_add_form') }}">Add Menu Item</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('staff.orders') }}">Pending Orders</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('staff.counter_form') }}">Counter / POS</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('inventory.inventory_list') }}">Inventory</a></li>
