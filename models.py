@@ -26,6 +26,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(255), nullable=False)
     customer_phone = db.Column(db.String(50), nullable=False)
+    customer_email = db.Column(db.String(255), nullable=True)
     mode = db.Column(db.String(20), nullable=False, index=True)
     status = db.Column(db.String(20), nullable=False, index=True)
     subtotal_cents = db.Column(db.Integer, nullable=False)

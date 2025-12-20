@@ -1,9 +1,10 @@
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import Config
 from extensions import db
 from models import User
+from email_utils import send_welcome_email
 
 bp = Blueprint("auth", __name__)
 
@@ -64,6 +65,13 @@ def register_post():
     db.session.add(user)
     db.session.commit()
 
+    try:
+        # Use the part before @ in email as name if name is not available
+        username = user.email.split('@')[0]
+        send_welcome_email(user.email, username, role="customer")
+    except Exception as e:
+        current_app.logger.error(f"Failed to send welcome email: {e}", exc_info=True)
+
     flash("Account created. Please log in.", "success")
     return redirect(url_for("auth.login"))
 
@@ -98,6 +106,13 @@ def staff_register_post():
     )
     db.session.add(user)
     db.session.commit()
+
+    try:
+        # Use the part before @ in email as name
+        username = user.email.split('@')[0]
+        send_welcome_email(user.email, username, role="staff")
+    except Exception as e:
+        current_app.logger.error(f"Failed to send welcome email: {e}", exc_info=True)
 
     flash("Staff account created. Please log in.", "success")
     return redirect(url_for("auth.login"))

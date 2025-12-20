@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, url_for
 
 from cart_utils import clear_cart, get_cart, parse_items_spec, set_cart
 from extensions import db
 from models import Coupon, MenuItem, Order, OrderItem
+from email_utils import send_order_confirmation_email
 
 bp = Blueprint("orders", __name__)
 
@@ -102,10 +103,11 @@ def cart_confirm():
 
     customer_name = (request.form.get("customer_name") or "").strip()
     customer_phone = (request.form.get("customer_phone") or "").strip()
+    customer_email = (request.form.get("customer_email") or "").strip()
     coupon_code = (request.form.get("coupon_code") or "").strip()
 
-    if not customer_name or not customer_phone:
-        flash("Customer name and phone are required.", "warning")
+    if not all([customer_name, customer_phone, customer_email]):
+        flash("Customer name, phone, and email are required.", "warning")
         return redirect(url_for("orders.cart_view"))
 
     ids = [int(k) for k in cart.keys()]
@@ -134,6 +136,7 @@ def cart_confirm():
     order = Order(
         customer_name=customer_name,
         customer_phone=customer_phone,
+        customer_email=customer_email,
         mode="online",
         status="pending",
         subtotal_cents=subtotal_cents,
@@ -158,6 +161,11 @@ def cart_confirm():
 
     db.session.add(order)
     db.session.commit()
+
+    try:
+        send_order_confirmation_email(order)
+    except Exception as e:
+        current_app.logger.error(f"Failed to send order confirmation email: {e}")
 
     clear_cart()
     return redirect(url_for("orders.success", order_id=order.id))
@@ -210,19 +218,22 @@ def manual_order_form():
     return render_template("orders/manual_order.html")
 
 
-@bp.post("/order")
+@bp.post("/manual/order")
 def manual_order_post():
-    spec = request.form.get("items_spec") or ""
-    customer_name = (request.form.get("customer_name") or "").strip()
-    customer_phone = (request.form.get("customer_phone") or "").strip()
-    coupon_code = (request.form.get("coupon_code") or "").strip()
+    data = request.form
+    customer_name = (data.get("customer_name") or "").strip()
+    customer_phone = (data.get("customer_phone") or "").strip()
+    customer_email = (data.get("customer_email") or "").strip()
+    mode = data.get("mode", "dine-in")
+    payment_mode = data.get("payment_mode", "cash")
+    status = data.get("status", "pending")
 
     if not customer_name or not customer_phone:
         flash("Customer name and phone are required.", "warning")
         return redirect(url_for("orders.manual_order_form"))
 
     try:
-        pairs = parse_items_spec(spec)
+        pairs = parse_items_spec(data.get("items_spec") or "")
     except ValueError as e:
         flash(str(e), "danger")
         return redirect(url_for("orders.manual_order_form"))
@@ -248,7 +259,7 @@ def manual_order_post():
 
     try:
         subtotal_cents, discount_cents, total_cents, applied_code = _compute_totals(
-            cart_items, coupon_code or None
+            cart_items, data.get("coupon_code") or None
         )
     except ValueError as e:
         flash(str(e), "danger")
@@ -257,13 +268,14 @@ def manual_order_post():
     order = Order(
         customer_name=customer_name,
         customer_phone=customer_phone,
-        mode="online",
-        status="pending",
+        customer_email=customer_email,
+        mode=mode,
+        status=status,
         subtotal_cents=subtotal_cents,
         discount_cents=discount_cents,
         total_cents=total_cents,
         coupon_code=applied_code,
-        payment_mode=None,
+        payment_mode=payment_mode,
         created_at=datetime.utcnow(),
     )
 
@@ -282,5 +294,11 @@ def manual_order_post():
     db.session.add(order)
     db.session.commit()
 
-    flash("Order created.", "success")
+    if customer_email:
+        try:
+            send_order_confirmation_email(order)
+        except Exception as e:
+            current_app.logger.error(f"Failed to send order confirmation email: {e}")
+
+    flash(f"Order #{order.id} created successfully.", "success")
     return redirect(url_for("orders.success", order_id=order.id))

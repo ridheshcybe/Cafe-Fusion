@@ -1,6 +1,9 @@
 from datetime import datetime
 
 from flask import Flask
+# In app.py, near the top with other imports
+from dotenv import load_dotenv
+load_dotenv()  # This loads the .env file
 
 from config import Config
 from extensions import db

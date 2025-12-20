@@ -1,0 +1,12 @@
+{% extends "errors/base.html" %}
+
+{% block error_content %}
+    <h1 class="display-1 text-danger">500</h1>
+    <h2 class="mb-4">Server Error</h2>
+    <p class="lead">Something went wrong on our end. We're working to fix it.</p>
+    {% if config.DEBUG %}
+    <div class="alert alert-danger mt-4 text-left">
+        <strong>Error:</strong> {{ error }}
+    </div>
+    {% endif %}
+{% endblock %}
